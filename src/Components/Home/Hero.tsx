@@ -13,7 +13,7 @@ function Hero() {
         transition={{ duration: 0.9, ease: "easeOut" }}
       >
         <h1 className="text-5xl sm:text-5xl md:text-6xl font-black leading-tight tracking-[-0.03em] font-Poppins">
-          Elevate your Brand with
+          <span className="italic">Elevate</span> your Brand with
           Custom Fashion Illustrations
         </h1>
 

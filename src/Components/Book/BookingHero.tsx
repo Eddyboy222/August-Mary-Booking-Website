@@ -277,7 +277,7 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#fbf6f2] px-6 py-10 flex flex-col lg:flex-row gap-10 pt-24 font-Raleway">
+    <div className="min-h-screen w-full bg-[#fbf6f2] px-6 py-10 flex flex-col lg:flex-row gap-10 pt-24 font-Raleway"> 
       {/* LEFT SIDE — Calendar */}
       <div className="w-full lg:w-1/2 bg-white p-6 rounded-2xl shadow">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
