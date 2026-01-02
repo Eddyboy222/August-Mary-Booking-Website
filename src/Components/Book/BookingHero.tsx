@@ -196,15 +196,21 @@
 //   );
 // }
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Calendar } from "lucide-react";
+import { createBooking, getBookings } from "../../lib/api";
+import type { BookingFromDB, BookingPayload } from "../../types/booking";
+
 
 export default function BookingPage() {
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>();
   const [bookedDays, setBookedDays] = useState<Date[]>([]);
-  const [mainOption, setMainOption] = useState("1");
+
+  const [mainOption, setMainOption] = useState<"1" | "2">("1");
+  const [subOption, setSubOption] = useState("Design");
+
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -213,7 +219,27 @@ export default function BookingPage() {
   const [showPopup, setShowPopup] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Handle date selection
+  /* ================= BLOCKED DAYS ================= */
+  const isBlockedDay = (day: Date) => {
+    const d = day.getDay();
+    return d === 0 || d === 4 || d === 6; // Sun, Thu, Sat
+  };
+
+  /* ================= FETCH BOOKED DAYS ================= */
+  useEffect(() => {
+  const fetchBookedDates = async () => {
+    try {
+      const data: BookingFromDB[] = await getBookings();
+      setBookedDays(data.map((b) => new Date(b.selectedDay)));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchBookedDates();
+}, []);
+
+  /* ================= DATE SELECT ================= */
   const handleDaySelect = (day?: Date) => {
     if (!day) return;
 
@@ -221,51 +247,60 @@ export default function BookingPage() {
     today.setHours(0, 0, 0, 0);
 
     if (day < today) return;
+    if (isBlockedDay(day)) return;
 
     const isBooked = bookedDays.some(
       (d) => d.toDateString() === day.toDateString()
     );
-
     if (isBooked) return;
 
     setSelectedDay(day);
   };
 
+  /* ================= VALIDATION ================= */
   const validateForm = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[0-9]{7,15}$/;
-
-    if (!firstName.trim()) return "Full name is required.";
-    if (!selectedDay) return "Please select a date.";
-    if (!email.trim()) return "Email is required.";
-    if (!emailRegex.test(email)) return "Enter a valid email address.";
-    if (!phone.trim()) return "Phone number is required.";
-    if (!phoneRegex.test(phone))
-      return "Phone must be 7–15 digits and numbers only.";
-
+    if (!firstName.trim()) return "Full name is required";
+    if (!selectedDay) return "Please select a date";
+    if (!email.trim()) return "Email is required";
+    if (!phone.trim()) return "Phone is required";
     return null;
   };
 
-  // Handle confirm button (open popup)
   const handleConfirm = () => {
-    const errorMessage = validateForm();
-    if (errorMessage) {
-      setError(errorMessage);
+    const err = validateForm();
+    if (err) {
+      setError(err);
       return;
     }
-
     setError(null);
     setShowPopup(true);
   };
 
-  // Final booking
-  const finalizeBooking = () => {
-    if (!selectedDay) return;
+  /* ================= SEND TO BACKEND ================= */
+  const finalizeBooking = async (): Promise<void> => {
+  if (!selectedDay) return;
 
-    setBookedDays([...bookedDays, selectedDay]);
+  const payload: BookingPayload = {
+    fullName: firstName,
+    email,
+    phone,
+    selectedDay: selectedDay.toDateString(), // EXACT string format
+    time: "9:00 AM - 7:00 PM",
+    mainOption:
+      mainOption === "1"
+        ? "3D Designs (Using Clo 3D)"
+        : "Digital Illustrated Designs",
+    subOption: mainOption === "2" ? "Illustration / Designs" : null,
+    description,
+  };
+
+  try {
+    await createBooking(payload);
+
+    setBookedDays((prev) => [...prev, selectedDay]);
     setShowPopup(false);
 
-    // Reset all fields
+    // Reset form
     setFirstName("");
     setEmail("");
     setPhone("");
@@ -274,11 +309,19 @@ export default function BookingPage() {
     setSelectedDay(undefined);
 
     alert("Appointment booked successfully!");
-  };
+  } catch (error) {
+    if (error instanceof Error) {
+      alert(error.message);
+    } else {
+      alert("Something went wrong");
+    }
+  }
+};
 
+  /* ================= JSX ================= */
   return (
-    <div className="min-h-screen w-full bg-[#fbf6f2] px-6 py-10 flex flex-col lg:flex-row gap-10 pt-24 font-Raleway"> 
-      {/* LEFT SIDE — Calendar */}
+    <div className="min-h-screen bg-[#fbf6f2] px-6 py-10 pt-24 font-Raleway flex flex-col lg:flex-row gap-10">
+      {/* CALENDAR */}
       <div className="w-full lg:w-1/2 bg-white p-6 rounded-2xl shadow">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <Calendar /> Select a Date
@@ -288,12 +331,20 @@ export default function BookingPage() {
           mode="single"
           selected={selectedDay}
           onSelect={handleDaySelect}
-          disabled={{ before: new Date() }}
-          modifiers={{ booked: bookedDays }}
+          disabled={[
+            { before: new Date() }, // past days
+            isBlockedDay, // Thu, Sat, Sun
+            bookedDays, // booked from DB
+          ]}
+          modifiers={{
+            booked: bookedDays,
+          }}
           modifiersStyles={{
             booked: {
               textDecoration: "line-through",
-              color: "red",
+              color: "#dc2626", // Tailwind red-600
+              fontWeight: "600",
+              cursor: "not-allowed",
             },
           }}
         />
@@ -301,7 +352,7 @@ export default function BookingPage() {
         <p className="mt-6 font-semibold">Time: 9:00 AM - 7:00 PM</p>
       </div>
 
-      {/* RIGHT SIDE — FORM */}
+      {/* FORM */}
       <div className="w-full lg:w-1/2 bg-white p-6 rounded-2xl shadow">
         <h2 className="text-2xl font-bold mb-4">Fill Your Details</h2>
 
@@ -311,83 +362,72 @@ export default function BookingPage() {
           </div>
         )}
 
-        <form className="flex flex-col gap-4">
-          <input
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            type="text"
-            placeholder="Full name"
-            className="border p-3 rounded w-full"
-          />
+        <input
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder="Full name"
+          className="border p-3 rounded w-full mb-3"
+        />
 
-          <input
-            type="text"
-            value={selectedDay ? selectedDay.toDateString() : "No date selected"}
-            readOnly
-            className="border p-3 rounded w-full bg-gray-100 text-gray-700"
-          />
+        <input
+          readOnly
+          value={selectedDay ? selectedDay.toDateString() : "No date selected"}
+          className="border p-3 rounded w-full mb-3 bg-gray-100"
+        />
 
-          <input
-            type="text"
-            value="9:00 AM - 7:00 PM"
-            readOnly
-            className="border p-3 rounded w-full bg-gray-100 text-gray-700"
-          />
+        <select
+          value={mainOption}
+          onChange={(e) => setMainOption(e.target.value as "1" | "2")}
+          className="border p-3 rounded w-full mb-3"
+        >
+          <option value="1">3D Designs (Using Clo 3D)</option>
+          <option value="2">Digital Illustrated Designs</option>
+        </select>
 
-          {/* Improved Dropdown */}
+        {mainOption === "2" && (
           <select
-            value={mainOption}
-            onChange={(e) => setMainOption(e.target.value)}
-            className="border p-3 rounded w-full bg-white shadow-sm"
+            value={subOption}
+            onChange={(e) => setSubOption(e.target.value)}
+            className="border p-3 rounded w-full mb-3"
           >
-            <option value="1">3D Designs (Using Clo 3D)</option>
-            <option value="2">Digital Illustrated Designs</option>
+            <option>Design</option>
+            <option>Illustration</option>
           </select>
+        )}
 
-          {mainOption === "2" && (
-            <select className="border p-3 rounded w-full bg-white shadow-sm">
-              <option value="A">Designs</option>
-              <option value="B">Illustration</option>
-            </select>
-          )}
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          className="border p-3 rounded w-full mb-3"
+        />
 
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder="Email address"
-            className="border p-3 rounded w-full"
-          />
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Phone"
+          className="border p-3 rounded w-full mb-3"
+        />
 
-          <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            type="text"
-            placeholder="Phone number"
-            className="border p-3 rounded w-full"
-          />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Describe your request (optional)"
+          className="border p-3 rounded w-full h-32"
+        />
 
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe your illustration request (optional)"
-            className="border p-3 rounded w-full h-32 resize-none"
-          />
-
-          <button
-            type="button"
-            onClick={handleConfirm}
-            className="mt-4 bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition w-full"
-          >
-            Confirm Appointment
-          </button>
-        </form>
+        <button
+          onClick={handleConfirm}
+          className="mt-4 w-full bg-black text-white py-3 rounded-lg"
+        >
+          Confirm Appointment
+        </button>
       </div>
 
       {/* POPUP */}
       {showPopup && (
-        <div className="fixed inset-0 bg-[#fbf6f2] bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-2xl w-[90%] max-w-md shadow-lg">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-2xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Confirm Your Booking</h2>
 
             <p>
@@ -405,6 +445,19 @@ export default function BookingPage() {
             <p>
               <strong>Phone:</strong> {phone}
             </p>
+            <p>
+              <strong>Service:</strong>{" "}
+              {mainOption === "1"
+                ? "3D Designs (Using Clo 3D)"
+                : "Digital Illustrated Designs"}
+            </p>
+
+            {mainOption === "2" && (
+              <p>
+                <strong>Type:</strong> {subOption}
+              </p>
+            )}
+
             {description && (
               <p>
                 <strong>Description:</strong> {description}
@@ -414,14 +467,13 @@ export default function BookingPage() {
             <div className="flex gap-4 mt-6">
               <button
                 onClick={() => setShowPopup(false)}
-                className="w-full py-2 rounded-lg border border-gray-400"
+                className="w-full py-2 border rounded"
               >
                 Cancel
               </button>
-
               <button
                 onClick={finalizeBooking}
-                className="w-full py-2 rounded-lg bg-black text-white"
+                className="w-full py-2 bg-black text-white rounded"
               >
                 Confirm
               </button>

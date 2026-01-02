@@ -14,7 +14,7 @@ const imagesData = [
   },
   {
     picture:
-      "https://res.cloudinary.com/dafafyxbh/image/upload/v1760746608/505137624_18279656404284941_4980997270212027287_n_dikagy.jpg",
+      "https://res.cloudinary.com/dafafyxbh/image/upload/v1767312471/555_tvolmp.png",
   },
   {
     picture:
@@ -26,7 +26,7 @@ const imagesData = [
   },
   {
     picture:
-      "https://res.cloudinary.com/dafafyxbh/image/upload/v1760746608/522681876_18284920876284941_7507482192588424598_n_thjuhu.jpg",
+      "https://res.cloudinary.com/dafafyxbh/image/upload/v1767311289/2222_pngeun.png",
   },
   {
     picture:

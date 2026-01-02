@@ -59,7 +59,7 @@ function Hero() {
         <motion.img
           className="object-cover outline rounded-xl transform -translate-y-3 hover:scale-105 transition-transform duration-300
           w-40 h-56 sm:w-48 sm:h-64 md:w-56 md:h-72 lg:w-64 lg:h-[26rem]"
-          src="https://res.cloudinary.com/dafafyxbh/image/upload/v1760746608/522681876_18284920876284941_7507482192588424598_n_thjuhu.jpg"
+          src="https://res.cloudinary.com/dafafyxbh/image/upload/v1767311289/2222_pngeun.png"
           alt="fashion illustration 1"
           variants={{
             hidden: { opacity: 0, x: -50 },
