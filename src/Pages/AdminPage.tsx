@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { API_BASE_URL } from "../config/adminapi";
+
 
 interface Booking {
   _id: string;
@@ -24,29 +26,32 @@ export default function AdminPage() {
   };
 
   const fetchBookings = async () => {
-    setLoading(true);
-    const res = await fetch(
-      "http://localhost:5000/api/admin/bookings",
-      { headers }
-    );
-    const data = await res.json();
-    setBookings(data);
-    setLoading(false);
-  };
+  setLoading(true);
 
-  const deleteBooking = async (id: string) => {
-    if (!confirm("Delete this booking?")) return;
+  const res = await fetch(
+    `${API_BASE_URL}/api/admin/bookings`,
+    { headers }
+  );
 
-    await fetch(
-      `http://localhost:5000/api/admin/bookings/${id}`,
-      {
-        method: "DELETE",
-        headers,
-      }
-    );
+  const data = await res.json();
+  setBookings(data);
+  setLoading(false);
+};
 
-    setBookings((prev) => prev.filter((b) => b._id !== id));
-  };
+const deleteBooking = async (id: string) => {
+  if (!confirm("Delete this booking?")) return;
+
+  await fetch(
+    `${API_BASE_URL}/api/admin/bookings/${id}`,
+    {
+      method: "DELETE",
+      headers,
+    }
+  );
+
+  setBookings((prev) => prev.filter((b) => b._id !== id));
+};
+
 
   /* 🔐 LOGIN */
   if (!loggedIn) {

@@ -21,7 +21,7 @@ const drawingData = [
     Pic: "https://res.cloudinary.com/dafafyxbh/image/upload/v1760747177/354424642_867561164703498_2161191697726496672_n_ixroau.jpg",
   },
   {
-    Pic: "https://res.cloudinary.com/dafafyxbh/image/upload/v1760747177/352342323_139696332413341_7837195590897249075_n_wbrhvw.jpg",
+    Pic: "https://res.cloudinary.com/dafafyxbh/image/upload/v1767727477/Untitled_Artwork_1_uarc7q.png",
   },
   {
     Pic: "https://res.cloudinary.com/dafafyxbh/image/upload/v1760747177/354424642_867561164703498_2161191697726496672_n_ixroau.jpg",
