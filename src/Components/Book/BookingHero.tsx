@@ -205,7 +205,9 @@ import type { BookingFromDB, BookingPayload } from "../../types/booking";
 
 export default function BookingPage() {
   const [selectedDay, setSelectedDay] = useState<Date | undefined>();
+
   const [fullyBookedDays, setFullyBookedDays] = useState<Date[]>([]);
+  const [oneSlotLeftDays, setOneSlotLeftDays] = useState<Date[]>([]);
 
   const [mainOption, setMainOption] = useState<"1" | "2">("1");
   const [subOption, setSubOption] = useState<"Design" | "Illustration">(
@@ -219,6 +221,7 @@ export default function BookingPage() {
 
   const [showPopup, setShowPopup] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isBooking, setIsBooking] = useState(false);
 
   /* ================= BLOCKED DAYS ================= */
   const isBlockedDay = (day: Date) => {
@@ -237,11 +240,16 @@ export default function BookingPage() {
         counts[b.selectedDay] = (counts[b.selectedDay] || 0) + 1;
       });
 
-      const fullDays = Object.entries(counts)
-        .filter(([, count]) => count >= 2)
-        .map(([day]) => new Date(day));
+      const full: Date[] = [];
+      const oneLeft: Date[] = [];
 
-      setFullyBookedDays(fullDays);
+      Object.entries(counts).forEach(([day, count]) => {
+        if (count >= 2) full.push(new Date(day));
+        else if (count === 1) oneLeft.push(new Date(day));
+      });
+
+      setFullyBookedDays(full);
+      setOneSlotLeftDays(oneLeft);
     } catch (err) {
       console.error(err);
     }
@@ -261,11 +269,11 @@ export default function BookingPage() {
     if (day < today) return;
     if (isBlockedDay(day)) return;
 
-    const isFullyBooked = fullyBookedDays.some(
+    const isFull = fullyBookedDays.some(
       (d) => d.toDateString() === day.toDateString()
     );
 
-    if (isFullyBooked) return;
+    if (isFull) return;
 
     setSelectedDay(day);
   };
@@ -289,9 +297,11 @@ export default function BookingPage() {
     setShowPopup(true);
   };
 
-  /* ================= SEND TO BACKEND ================= */
-  const finalizeBooking = async (): Promise<void> => {
+  /* ================= BOOK ================= */
+  const finalizeBooking = async () => {
     if (!selectedDay) return;
+
+    setIsBooking(true);
 
     const payload: BookingPayload = {
       fullName: firstName,
@@ -309,8 +319,6 @@ export default function BookingPage() {
 
     try {
       await createBooking(payload);
-
-      // 🔥 Refresh fully booked days immediately
       await fetchBookedDates();
 
       setShowPopup(false);
@@ -323,35 +331,32 @@ export default function BookingPage() {
       setSelectedDay(undefined);
 
       alert("Appointment booked successfully!");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       alert("Something went wrong");
+    } finally {
+      setIsBooking(false);
     }
   };
 
   /* ================= JSX ================= */
   return (
     <div className="min-h-screen bg-[#fbf6f2] px-6 py-10 pt-24 font-Raleway">
-      {/* PAYMENT / NOTE */}
+      {/* PAYMENT NOTE */}
       <div className="max-w-6xl mx-auto mb-10">
         <div className="bg-white p-6 rounded-2xl shadow">
-          <h3 className="text-xl font-bold mb-2">Important Information</h3>
+          <h3 className="text-lg font-bold mb-2">Important Information</h3>
           <p className="text-sm text-gray-700 mb-4">
-            View Catalogue,  choose payment plan and complete booking.
+            After booking your appointment, please complete the payment form.
           </p>
 
           <a
-            href="https://forms.gle/ZU3AKsLQCq7dH3tv8"
+            href="https://forms.gle/tGaY9oNUFeaA9r6S7"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block bg-black text-white px-6 py-3 rounded-lg text-sm hover:bg-gray-800 transition"
+            className="inline-block bg-black text-white px-6 py-3 rounded-lg text-sm"
           >
             Proceed to Payment
           </a>
-
-          <p className="text-xs text-gray-500 mt-3">
-            ⚠️ Bookings without completed payment may not be confirmed.
-          </p>
         </div>
       </div>
 
@@ -371,18 +376,28 @@ export default function BookingPage() {
               isBlockedDay,
               fullyBookedDays,
             ]}
-            modifiers={{ booked: fullyBookedDays }}
+            modifiers={{
+              fullyBooked: fullyBookedDays,
+              oneLeft: oneSlotLeftDays,
+            }}
             modifiersStyles={{
-              booked: {
+              fullyBooked: {
                 textDecoration: "line-through",
                 color: "#dc2626",
                 fontWeight: "600",
-                cursor: "not-allowed",
+              },
+              oneLeft: {
+                backgroundColor: "#fef3c7",
+                color: "#92400e",
+                fontWeight: "600",
               },
             }}
           />
 
-          <p className="mt-2 font-semibold">Time: 9:00 AM – 7:00 PM</p>
+          <p className="mt-2 text-sm text-gray-600">
+            🟡 <strong>Yellow:</strong> 1 slot left &nbsp; | &nbsp;
+            🔴 <strong>Red:</strong> Fully booked
+          </p>
         </div>
 
         {/* FORM */}
@@ -462,7 +477,7 @@ export default function BookingPage() {
         </div>
       </div>
 
-      {/* CONFIRM POPUP */}
+      {/* POPUP */}
       {showPopup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-2xl w-full max-w-md">
@@ -471,30 +486,22 @@ export default function BookingPage() {
             <p><strong>Name:</strong> {firstName}</p>
             <p><strong>Date:</strong> {selectedDay?.toDateString()}</p>
             <p><strong>Time:</strong> 9:00 AM – 7:00 PM</p>
-            <p><strong>Email:</strong> {email}</p>
-            <p><strong>Phone:</strong> {phone}</p>
-            <p><strong>Service:</strong> {mainOption === "1" ? "3D Designs (Using Clo 3D)" : "Digital Illustrated Designs"}</p>
-
-            {mainOption === "2" && (
-              <p><strong>Type:</strong> {subOption}</p>
-            )}
-
-            {description && (
-              <p><strong>Description:</strong> {description}</p>
-            )}
 
             <div className="flex gap-4 mt-6">
               <button
                 onClick={() => setShowPopup(false)}
                 className="w-full py-2 border rounded"
+                disabled={isBooking}
               >
                 Cancel
               </button>
+
               <button
                 onClick={finalizeBooking}
+                disabled={isBooking}
                 className="w-full py-2 bg-black text-white rounded"
               >
-                Confirm
+                {isBooking ? "Booking…" : "Confirm"}
               </button>
             </div>
           </div>
@@ -503,4 +510,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
