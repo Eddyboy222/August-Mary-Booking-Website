@@ -337,12 +337,11 @@ export default function BookingPage() {
         <div className="bg-white p-6 rounded-2xl shadow">
           <h3 className="text-xl font-bold mb-2">Important Information</h3>
           <p className="text-sm text-gray-700 mb-4">
-            After booking your appointment, View the Catalogue and please complete the payment form to
-            confirm your slot.
+            View Catalogue,  choose payment plan and complete booking.
           </p>
 
           <a
-            href="https://forms.gle/2PdFgc2fvMwgNTDv8"
+            href="https://forms.gle/ZU3AKsLQCq7dH3tv8"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-black text-white px-6 py-3 rounded-lg text-sm hover:bg-gray-800 transition"
