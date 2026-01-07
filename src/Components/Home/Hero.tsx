@@ -59,7 +59,7 @@ function Hero() {
         <motion.img
           className="object-cover outline rounded-xl transform -translate-y-3 hover:scale-105 transition-transform duration-300
           w-40 h-56 sm:w-48 sm:h-64 md:w-56 md:h-72 lg:w-64 lg:h-[26rem]"
-          src="https://res.cloudinary.com/dafafyxbh/image/upload/v1767311289/2222_pngeun.png"
+          src="https://res.cloudinary.com/dafafyxbh/image/upload/v1767795403/Untitled_Artwork_4_ozzqoh.png"
           alt="fashion illustration 1"
           variants={{
             hidden: { opacity: 0, x: -50 },
@@ -70,7 +70,7 @@ function Hero() {
         <motion.img
           className="object-cover outline rounded-xl transform translate-y-3 hover:scale-105 transition-transform duration-300
           w-40 h-56 sm:w-48 sm:h-64 md:w-56 md:h-72 lg:w-64 lg:h-[26rem]"
-          src="https://res.cloudinary.com/dafafyxbh/image/upload/v1760747177/354424642_867561164703498_2161191697726496672_n_ixroau.jpg"
+          src="https://res.cloudinary.com/dafafyxbh/image/upload/v1767727477/Untitled_Artwork_1_uarc7q.png"
           alt="fashion illustration 2"
           variants={{
             hidden: { opacity: 0, x: 50 },

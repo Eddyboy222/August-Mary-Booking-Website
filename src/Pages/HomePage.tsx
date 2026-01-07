@@ -57,30 +57,30 @@ const steps = [
 
 const testimonialsData = [
   {
-    name: "Client 1",
+    name: "Amara C.",
     message:
-      "Absolutely stunning illustration! It captured the essence of my brand perfectly.",
+      "Beautiful work and a smooth process from start to finish. The illustrations brought my ideas to life in the most stylish way.",
   },
   {
-    name: "Client 2.",
+    name: "Teni A.",
     message:
-      "The attention to detail and fashion aesthetics are just top-notch. Highly recommended!",
+      "August Mary has a unique eye for fashion. The illustrations were modern, expressive, and perfectly aligned with my brand.",
   },
   {
-    name: "Client 3.",
+    name: "Daniel O.",
     message:
-      "I’ve worked with several artists, but this was the smoothest experience ever.",
+      "The creativity and attention to detail were outstanding. Every piece felt refined and thoughtfully executed.",
   },
   {
-    name: "Client 4.",
+    name: "Zara A.",
     message:
-      "Professional, creative, and punctual — my project turned out even better than imagined!",
+      "Exceptional quality and great communication throughout. I’d gladly recommend this atelier to anyone seeking timeless fashion illustrations.",
   },
 
   {
-    name: "Client 5.",
+    name: "Olivia M.",
     message:
-      "Professional, creative, and punctual — my project turned out even better than imagined!",
+      "There’s a quiet confidence in the work that really stands out. Each illustration feels refined, expressive, and uniquely crafted.",
   },
 ];
 
