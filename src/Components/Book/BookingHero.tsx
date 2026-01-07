@@ -658,7 +658,7 @@ export default function BookingPage() {
           </p>
 
           <a
-            href="https://forms.gle/tGaY9oNUFeaA9r6S7"
+            href="https://forms.gle/ZU3AKsLQCq7dH3tv8"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-black text-white px-6 py-3 rounded-lg text-sm"
