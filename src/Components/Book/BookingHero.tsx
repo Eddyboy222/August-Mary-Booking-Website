@@ -368,14 +368,21 @@ export default function BookingPage() {
             mode="single"
             selected={selectedDay}
             onSelect={handleDaySelect}
-            disabled={[{ before: new Date() }, isBlockedDay, fullyBookedDays]}
-            modifiers={{ booked: fullyBookedDays }}
+            disabled={[
+              { before: new Date() }, // past days
+              isBlockedDay, // Sun, Thu, Sat
+              fullyBookedDays, // FULLY BOOKED (2 slots used)
+            ]}
+            modifiers={{
+              fullyBooked: fullyBookedDays,
+            }}
             modifiersStyles={{
-              booked: {
+              fullyBooked: {
                 textDecoration: "line-through",
-                color: "#dc2626",
+                color: "#dc2626", // red-600
                 fontWeight: "600",
                 cursor: "not-allowed",
+                opacity: 0.7,
               },
             }}
           />
