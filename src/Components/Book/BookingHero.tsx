@@ -226,28 +226,28 @@ export default function BookingPage() {
     return d === 0 || d === 4 || d === 6; // Sun, Thu, Sat
   };
 
-  /* ================= FETCH BOOKED DAYS ================= */
+  /* ================= FETCH BOOKINGS ================= */
+  const fetchBookedDates = async () => {
+    try {
+      const data: BookingFromDB[] = await getBookings();
+
+      const counts: Record<string, number> = {};
+
+      data.forEach((b) => {
+        counts[b.selectedDay] = (counts[b.selectedDay] || 0) + 1;
+      });
+
+      const fullDays = Object.entries(counts)
+        .filter(([, count]) => count >= 2)
+        .map(([day]) => new Date(day));
+
+      setFullyBookedDays(fullDays);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchBookedDates = async () => {
-      try {
-        const data: BookingFromDB[] = await getBookings();
-
-        const counts: Record<string, number> = {};
-
-        data.forEach((b) => {
-          counts[b.selectedDay] = (counts[b.selectedDay] || 0) + 1;
-        });
-
-        const fullDays = Object.entries(counts)
-          .filter(([, count]) => count >= 2)
-          .map(([day]) => new Date(day));
-
-        setFullyBookedDays(fullDays);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     fetchBookedDates();
   }, []);
 
@@ -264,6 +264,7 @@ export default function BookingPage() {
     const isFullyBooked = fullyBookedDays.some(
       (d) => d.toDateString() === day.toDateString()
     );
+
     if (isFullyBooked) return;
 
     setSelectedDay(day);
@@ -309,8 +310,10 @@ export default function BookingPage() {
     try {
       await createBooking(payload);
 
-      setShowPopup(false);
+      // 🔥 Refresh fully booked days immediately
+      await fetchBookedDates();
 
+      setShowPopup(false);
       setFirstName("");
       setEmail("");
       setPhone("");
@@ -320,20 +323,17 @@ export default function BookingPage() {
       setSelectedDay(undefined);
 
       alert("Appointment booked successfully!");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("Something went wrong");
-      }
+      alert("Something went wrong");
     }
   };
 
   /* ================= JSX ================= */
   return (
     <div className="min-h-screen bg-[#fbf6f2] px-6 py-10 pt-24 font-Raleway">
-      {/* 🔽 PAYMENT / NOTE — BELOW BOTH */}
-      <div className="max-w-6xl mx-auto mt-2 mb-10">
+      {/* PAYMENT / NOTE */}
+      <div className="max-w-6xl mx-auto mb-10">
         <div className="bg-white p-6 rounded-2xl shadow">
           <h3 className="text-lg font-bold mb-2">Important Information</h3>
           <p className="text-sm text-gray-700 mb-4">
@@ -356,7 +356,6 @@ export default function BookingPage() {
         </div>
       </div>
 
-      {/* CALENDAR + FORM */}
       <div className="flex flex-col lg:flex-row gap-10 max-w-6xl mx-auto">
         {/* CALENDAR */}
         <div className="w-full lg:w-1/2 bg-white p-6 rounded-2xl shadow">
@@ -369,25 +368,22 @@ export default function BookingPage() {
             selected={selectedDay}
             onSelect={handleDaySelect}
             disabled={[
-              { before: new Date() }, // past days
-              isBlockedDay, // Sun, Thu, Sat
-              fullyBookedDays, // FULLY BOOKED (2 slots used)
+              { before: new Date() },
+              isBlockedDay,
+              fullyBookedDays,
             ]}
-            modifiers={{
-              fullyBooked: fullyBookedDays,
-            }}
+            modifiers={{ booked: fullyBookedDays }}
             modifiersStyles={{
-              fullyBooked: {
+              booked: {
                 textDecoration: "line-through",
-                color: "#dc2626", // red-600
+                color: "#dc2626",
                 fontWeight: "600",
                 cursor: "not-allowed",
-                opacity: 0.7,
               },
             }}
           />
 
-          <p className="mt-2 font-semibold ">Time: 9:00 AM - 7:00 PM</p>
+          <p className="mt-2 font-semibold">Time: 9:00 AM – 7:00 PM</p>
         </div>
 
         {/* FORM */}
@@ -467,44 +463,25 @@ export default function BookingPage() {
         </div>
       </div>
 
-      {/* POPUP */}
+      {/* CONFIRM POPUP */}
       {showPopup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-2xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Confirm Your Booking</h2>
 
-            <p>
-              <strong>Name:</strong> {firstName}
-            </p>
-            <p>
-              <strong>Date:</strong> {selectedDay?.toDateString()}
-            </p>
-            <p>
-              <strong>Time:</strong> 9:00 AM - 7:00 PM
-            </p>
-            <p>
-              <strong>Email:</strong> {email}
-            </p>
-            <p>
-              <strong>Phone:</strong> {phone}
-            </p>
-            <p>
-              <strong>Service:</strong>{" "}
-              {mainOption === "1"
-                ? "3D Designs (Using Clo 3D)"
-                : "Digital Illustrated Designs"}
-            </p>
+            <p><strong>Name:</strong> {firstName}</p>
+            <p><strong>Date:</strong> {selectedDay?.toDateString()}</p>
+            <p><strong>Time:</strong> 9:00 AM – 7:00 PM</p>
+            <p><strong>Email:</strong> {email}</p>
+            <p><strong>Phone:</strong> {phone}</p>
+            <p><strong>Service:</strong> {mainOption === "1" ? "3D Designs (Using Clo 3D)" : "Digital Illustrated Designs"}</p>
 
             {mainOption === "2" && (
-              <p>
-                <strong>Type:</strong> {subOption}
-              </p>
+              <p><strong>Type:</strong> {subOption}</p>
             )}
 
             {description && (
-              <p>
-                <strong>Description:</strong> {description}
-              </p>
+              <p><strong>Description:</strong> {description}</p>
             )}
 
             <div className="flex gap-4 mt-6">
@@ -527,3 +504,4 @@ export default function BookingPage() {
     </div>
   );
 }
+
