@@ -517,7 +517,8 @@ export default function BookingPage() {
   const [fullyBookedDays, setFullyBookedDays] = useState<Date[]>([]);
   const [oneSlotLeftDays, setOneSlotLeftDays] = useState<Date[]>([]);
 
-  const [mainOption, setMainOption] = useState<"1" | "2">("1");
+  // 🔹 Digital Illustrated Designs is now default
+  const [mainOption, setMainOption] = useState<"digital" | "3d">("digital");
   const [subOption, setSubOption] = useState<"Design" | "Illustration">(
     "Design"
   );
@@ -617,11 +618,8 @@ export default function BookingPage() {
       phone,
       selectedDay: selectedDay.toDateString(),
       time: "9:00 AM - 7:00 PM",
-      mainOption:
-        mainOption === "1"
-          ? "3D Designs (Using Clo 3D)"
-          : "Digital Illustrated Designs",
-      subOption: mainOption === "2" ? subOption : null,
+      mainOption: "Digital Illustrated Designs",
+      subOption,
       description,
     };
 
@@ -634,7 +632,7 @@ export default function BookingPage() {
       setEmail("");
       setPhone("");
       setDescription("");
-      setMainOption("1");
+      setMainOption("digital");
       setSubOption("Design");
       setSelectedDay(undefined);
 
@@ -654,7 +652,7 @@ export default function BookingPage() {
         <div className="bg-white p-6 rounded-2xl shadow">
           <h3 className="text-lg font-bold mb-2">Important Information</h3>
           <p className="text-sm text-gray-700 mb-4">
-            View Catalogue, choose payment plan and complete booking.
+            View catalogue, choose payment plan and complete booking.
           </p>
 
           <a
@@ -733,27 +731,37 @@ export default function BookingPage() {
             className="border p-3 rounded w-full mb-3 bg-gray-100"
           />
 
+          <input
+            readOnly
+            value="9:00 AM - 7:00 PM"
+            className="border p-3 rounded w-full mb-3 bg-gray-100"
+          />
+
+          {/* SERVICE SELECT */}
           <select
             value={mainOption}
-            onChange={(e) => setMainOption(e.target.value as "1" | "2")}
+            onChange={(e) =>
+              setMainOption(e.target.value as "digital" | "3d")
+            }
             className="border p-3 rounded w-full mb-3"
           >
-            <option value="1">3D Designs (Using Clo 3D)</option>
-            <option value="2">Digital Illustrated Designs</option>
+            <option value="digital">Digital Illustrated Designs</option>
+            <option value="3d" disabled>
+              3D Designs (Using Clo 3D) — Coming soon
+            </option>
           </select>
 
-          {mainOption === "2" && (
-            <select
-              value={subOption}
-              onChange={(e) =>
-                setSubOption(e.target.value as "Design" | "Illustration")
-              }
-              className="border p-3 rounded w-full mb-3"
-            >
-              <option value="Design">Design</option>
-              <option value="Illustration">Illustration</option>
-            </select>
-          )}
+          {/* SUB OPTIONS */}
+          <select
+            value={subOption}
+            onChange={(e) =>
+              setSubOption(e.target.value as "Design" | "Illustration")
+            }
+            className="border p-3 rounded w-full mb-3"
+          >
+            <option value="Design">Design</option>
+            <option value="Illustration">Illustration</option>
+          </select>
 
           <input
             value={email}
@@ -790,44 +798,24 @@ export default function BookingPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-2xl w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Confirm Your Booking</h2>
-            <p>
-              <strong>Name:</strong> {firstName}
-            </p>
-            <p>
-              <strong>Date:</strong> {selectedDay?.toDateString()}
-            </p>
-            <p>
-              <strong>Time:</strong> 9:00 AM – 7:00 PM
-            </p>
-            <p>
-              <strong>Email:</strong> {email}
-            </p>
-            {" "}
-            <p>
-              <strong>Phone:</strong> {phone}
-            </p>
-            {" "}
-            <p>
-              <strong>Service:</strong>{" "}
-              {mainOption === "1"
-                ? "3D Designs (Using Clo 3D)"
-                : "Digital Illustrated Designs"}
-            </p>
-            {mainOption === "2" && (
-              <p>
-                <strong>Type:</strong> {subOption}
-              </p>
-            )}
+
+            <p><strong>Name:</strong> {firstName}</p>
+            <p><strong>Date:</strong> {selectedDay?.toDateString()}</p>
+            <p><strong>Time:</strong> 9:00 AM – 7:00 PM</p>
+            <p><strong>Email:</strong> {email}</p>
+            <p><strong>Phone:</strong> {phone}</p>
+            <p><strong>Service:</strong> Digital Illustrated Designs</p>
+            <p><strong>Type:</strong> {subOption}</p>
+
             {description && (
-              <p>
-                <strong>Description:</strong> {description}
-              </p>
+              <p><strong>Description:</strong> {description}</p>
             )}
+
             <div className="flex gap-4 mt-6">
               <button
                 onClick={() => setShowPopup(false)}
-                className="w-full py-2 border rounded"
                 disabled={isBooking}
+                className="w-full py-2 border rounded"
               >
                 Cancel
               </button>
@@ -846,3 +834,4 @@ export default function BookingPage() {
     </div>
   );
 }
+
