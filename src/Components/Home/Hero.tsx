@@ -5,7 +5,7 @@ function Hero() {
   return (
     <section className="bg-[#fbf6f2] flex flex-col lg:flex-row items-center lg:items-center justify-between px-5 sm:px-10 md:px-16 lg:px-17 pt-24 md:pt-24 pb-15 lg:pb-16 overflow-hidden lg:gap-10">
       
-      {/* Text Section */}
+      
       <motion.div
         className="flex flex-col items-center text-center lg:items-start lg:text-left max-w-xl"
         initial={{ opacity: 0, x: -100 }}
@@ -42,7 +42,7 @@ function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Image Section */}
+      
       <motion.div
         className="flex flex-row lg:flex-row justify-center gap-4 mt-11 lg:mt-0 w-full lg:w-auto"
         initial="hidden"

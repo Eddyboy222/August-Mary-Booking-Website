@@ -4,7 +4,7 @@ import { motion, easeOut } from "framer-motion";
 function Getstarted() {
   return (
     <div className="w-full flex flex-col items-center py-16 px-6 bg-[#fbf6f2] overflow-hidden">
-      {/* Heading */}
+      
       <motion.div
         className="text-center mb-12"
         initial={{ opacity: 0, y: -30 }}
@@ -20,7 +20,7 @@ function Getstarted() {
         </p>
       </motion.div>
 
-      {/* Button */}
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

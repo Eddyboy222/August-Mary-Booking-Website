@@ -7,12 +7,7 @@ import { sendContactMessage } from "../../lib/contactApi";
 import type { ContactPayload } from "../../types/contact";
 
 function Getintouch() {
-  // const [name, setName] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [message, setMessage] = useState("");
-  // const [loading, setLoading] = useState(false);
-  // const [success, setSuccess] = useState("");
-  // const [error, setError] = useState("");
+
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
@@ -21,46 +16,6 @@ function Getintouch() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   setError("");
-  //   setSuccess("");
-
-  //   if (!name || !email || !message) {
-  //     setError("Please fill in all fields.");
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-
-  //     const res = await fetch("http://localhost:5000/api/contact", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ name, email, message }),
-  //     });
-
-  //     const data: { message?: string } = await res.json();
-
-  //     if (!res.ok) {
-  //       throw new Error(data.message || "Failed to send message");
-  //     }
-
-  //     setSuccess("Message sent successfully!");
-  //     setName("");
-  //     setEmail("");
-  //     setMessage("");
-  //   } catch (err: unknown) {
-  //     if (err instanceof Error) {
-  //       setError(err.message);
-  //     } else {
-  //       setError("Unexpected error occurred");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -96,7 +51,7 @@ function Getintouch() {
   return (
     <div className="w-full min-h-screen flex flex-col items-center bg-[#fbf6f2] py-16 px-6 md:px-12 lg:px-24 pt-24">
       <div className="w-full flex flex-col lg:flex-row justify-between gap-12 lg:gap-20 max-w-6xl">
-        {/* Left Section */}
+        
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -115,7 +70,7 @@ function Getintouch() {
           </p>
 
           <div className="flex flex-col space-y-6">
-            {/* Email */}
+            
             <div className="flex items-center gap-6">
               <div className="bg-white p-3 rounded-xl w-12 h-12 flex items-center justify-center shadow-sm">
                 <Mail size={22} />
@@ -128,7 +83,7 @@ function Getintouch() {
               </div>
             </div>
 
-            {/* Phone */}
+            
             <div className="flex items-center gap-6">
               <div className="bg-white p-3 rounded-xl w-12 h-12 flex items-center justify-center shadow-sm">
                 <Phone size={22} />
@@ -205,7 +160,7 @@ function Getintouch() {
               className="px-4 py-3 border border-gray-300 rounded-md font-Raleway"
             />
 
-            {/* Feedback */}
+            
             {error && (
               <p className="text-red-600 text-sm font-Raleway">{error}</p>
             )}
@@ -214,7 +169,7 @@ function Getintouch() {
               <p className="text-green-600 text-sm font-Raleway">{success}</p>
             )}
 
-            {/* Button */}
+            
             <button
               type="submit"
               disabled={loading}

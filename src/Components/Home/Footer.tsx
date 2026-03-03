@@ -29,7 +29,7 @@ function Footer() {
         viewport={{ once: true }}
         variants={containerVariants}
       >
-        {/* Logo & Business Info */}
+        
         <motion.div
           className="flex flex-col items-center md:items-start space-y-4 flex-1"
           variants={itemVariants}
@@ -54,7 +54,7 @@ function Footer() {
           </div>
         </motion.div>
 
-        {/* Quick Links */}
+        
         <motion.div
           className="flex flex-col items-center md:items-start space-y-4 flex-1"
           variants={itemVariants}
@@ -70,7 +70,7 @@ function Footer() {
           </div>
         </motion.div>
 
-        {/* Connect With Us */}
+        
         <motion.div
           className="flex flex-col items-center md:items-start space-y-4 flex-1"
           variants={itemVariants}
@@ -108,7 +108,7 @@ function Footer() {
         </motion.div>
       </motion.div>
 
-      {/* Divider with gradient */}
+      
       <div className="relative mt-12 mb-6">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-gray-200"></div>
@@ -118,7 +118,7 @@ function Footer() {
         </div>
       </div>
 
-      {/* Copyright */}
+      
       <motion.div
         className="text-center pt-6"
         initial={{ opacity: 0, y: 20 }}

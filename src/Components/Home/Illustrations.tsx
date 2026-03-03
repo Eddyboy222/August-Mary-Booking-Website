@@ -15,7 +15,7 @@ const containerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.15, // delay between each child
+      staggerChildren: 0.15, 
     },
   },
 };
@@ -25,7 +25,7 @@ const itemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: easeOut }, // TypeScript-compliant easing
+    transition: { duration: 0.6, ease: easeOut }, 
   },
 };
 
@@ -54,7 +54,7 @@ function Illustrations({ images }: IllustrationProps) {
         </p>
       </motion.div>
 
-      {/* Image Grid */}
+      
       <motion.div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl mb-10"
         initial="hidden"

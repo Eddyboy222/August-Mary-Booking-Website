@@ -517,7 +517,7 @@ export default function BookingPage() {
   const [fullyBookedDays, setFullyBookedDays] = useState<Date[]>([]);
   const [oneSlotLeftDays, setOneSlotLeftDays] = useState<Date[]>([]);
 
-  // 🔹 Digital Illustrated Designs is now default
+  // 🔹 Made Digital Illustrated Designs to  be the default
   const [mainOption, setMainOption] = useState<"digital" | "3d">("digital");
   const [subOption, setSubOption] = useState<"Design" | "Illustration">(
     "Design"
@@ -532,11 +532,22 @@ export default function BookingPage() {
   const [error, setError] = useState<string | null>(null);
   const [isBooking, setIsBooking] = useState(false);
 
-  /* ================= BLOCKED DAYS ================= */
+  /* THIS CODE I USED TO BLOCK SOME DAYS */
+  // const isBlockedDay = (day: Date) => {
+  //   const d = day.getDay();
+  //   return d === 0 || d === 4 || d === 6; // Sun, Thu, Sat
+  // };
+
   const isBlockedDay = (day: Date) => {
-    const d = day.getDay();
-    return d === 0 || d === 4 || d === 6; // Sun, Thu, Sat
-  };
+  const d = day.getDay();
+  const month = day.getMonth(); // 0 = January, 3 = April
+
+  // Block April completely
+  if (month === 3) return true;
+
+  // Keep your original blocked days (Sun, Thu, Sat)
+  return d === 0 || d === 4 || d === 6;
+};
 
   /* ================= FETCH BOOKINGS ================= */
   const fetchBookedDates = async () => {
@@ -587,7 +598,7 @@ export default function BookingPage() {
     setSelectedDay(day);
   };
 
-  /* ================= VALIDATION ================= */
+  /* THIS CODE IS THE VALIDATION FOR THE FORM, TOO NOT LEAVE EMPTY */
   const validateForm = () => {
     if (!firstName.trim()) return "Full name is required";
     if (!selectedDay) return "Please select a date";
@@ -656,7 +667,7 @@ export default function BookingPage() {
           </p>
 
           <a
-            href="https://forms.gle/ZU3AKsLQCq7dH3tv8"
+            href="https://forms.gle/bjtbDqDZmvzFbCgj8"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-black text-white px-6 py-3 rounded-lg text-sm"
@@ -671,12 +682,13 @@ export default function BookingPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-10 max-w-6xl mx-auto">
-        {/* CALENDAR */}
+        
         <div className="w-full lg:w-1/2 bg-white p-6 rounded-2xl shadow">
           <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
             <Calendar /> Select a Date
           </h2>
 
+          {/* THIS PART WAS FOR THE REACT DAY PICKER */}
           <DayPicker
             mode="single"
             selected={selectedDay}
@@ -706,7 +718,7 @@ export default function BookingPage() {
           </p>
         </div>
 
-        {/* FORM */}
+        
         <div className="w-full lg:w-1/2 bg-white p-6 rounded-2xl shadow">
           <h2 className="text-2xl font-bold mb-4">Fill Your Details</h2>
 
@@ -737,7 +749,7 @@ export default function BookingPage() {
             className="border p-3 rounded w-full mb-3 bg-gray-100"
           />
 
-          {/* SERVICE SELECT */}
+          
           <select
             value={mainOption}
             onChange={(e) =>
@@ -751,7 +763,7 @@ export default function BookingPage() {
             </option>
           </select>
 
-          {/* SUB OPTIONS */}
+          
           <select
             value={subOption}
             onChange={(e) =>
@@ -793,7 +805,7 @@ export default function BookingPage() {
         </div>
       </div>
 
-      {/* POPUP */}
+      
       {showPopup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-2xl w-full max-w-md">
