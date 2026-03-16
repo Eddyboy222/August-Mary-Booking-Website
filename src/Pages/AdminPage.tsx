@@ -28,13 +28,20 @@ export default function AdminPage() {
   const fetchBookings = async () => {
   setLoading(true);
 
+
   const res = await fetch(
     `${API_BASE_URL}/api/admin/bookings`,
     { headers }
   );
 
-  const data = await res.json();
-  setBookings(data);
+ const data = await res.json();
+
+data.sort(
+  (a: Booking, b: Booking) =>
+    new Date(a.selectedDay).getTime() - new Date(b.selectedDay).getTime()
+);
+
+setBookings(data);
   setLoading(false);
 };
 
