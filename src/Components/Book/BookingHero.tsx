@@ -516,6 +516,8 @@ export default function BookingPage() {
 
   const [fullyBookedDays, setFullyBookedDays] = useState<Date[]>([]);
   const [oneSlotLeftDays, setOneSlotLeftDays] = useState<Date[]>([]);
+  const [twoSlotLeftDays, setTwoSlotLeftDays] = useState<Date[]>([]);
+  
 
   // 🔹 Made Digital Illustrated Designs to  be the default
   const [mainOption, setMainOption] = useState<"digital" | "3d">("digital");
@@ -550,30 +552,71 @@ export default function BookingPage() {
 };
 
   /* ================= FETCH BOOKINGS ================= */
+  // const fetchBookedDates = async () => {
+  //   try {
+  //     const data: BookingFromDB[] = await getBookings();
+
+  //     const counts: Record<string, number> = {};
+
+  //     data.forEach((b) => {
+  //       counts[b.selectedDay] = (counts[b.selectedDay] || 0) + 1;
+  //     });
+
+  //     const full: Date[] = [];
+  //     const oneLeft: Date[] = [];
+
+  //     Object.entries(counts).forEach(([day, count]) => {
+  //       if (count >= 2) full.push(new Date(day));
+  //       else if (count === 1) oneLeft.push(new Date(day));
+  //     });
+
+  //     setFullyBookedDays(full);
+  //     setOneSlotLeftDays(oneLeft);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   const fetchBookedDates = async () => {
-    try {
-      const data: BookingFromDB[] = await getBookings();
+  try {
+    const data: BookingFromDB[] = await getBookings();
 
-      const counts: Record<string, number> = {};
+    const counts: Record<string, number> = {};
 
-      data.forEach((b) => {
-        counts[b.selectedDay] = (counts[b.selectedDay] || 0) + 1;
-      });
+    data.forEach((b) => {
+      counts[b.selectedDay] = (counts[b.selectedDay] || 0) + 1;
+    });
 
-      const full: Date[] = [];
-      const oneLeft: Date[] = [];
+    const full: Date[] = [];
+    const oneLeft: Date[] = [];
+    const twoLeft: Date[] = [];
 
-      Object.entries(counts).forEach(([day, count]) => {
-        if (count >= 2) full.push(new Date(day));
-        else if (count === 1) oneLeft.push(new Date(day));
-      });
+    Object.entries(counts).forEach(([day, count]) => {
+      const dateObj = new Date(day);
+      const dayOfMonth = dateObj.getDate();
 
-      setFullyBookedDays(full);
-      setOneSlotLeftDays(oneLeft);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+      // First week gets 3 slots
+      const maxSlots = dayOfMonth <= 7 ? 3 : 2;
+
+      const remaining = maxSlots - count;
+
+      if (remaining <= 0) {
+        full.push(dateObj);
+      } else if (remaining === 1) {
+        oneLeft.push(dateObj);
+      } else if (remaining === 2) {
+        twoLeft.push(dateObj);
+      }
+    });
+
+    setFullyBookedDays(full);
+    setOneSlotLeftDays(oneLeft);
+    setTwoSlotLeftDays(twoLeft);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   useEffect(() => {
     fetchBookedDates();
@@ -696,26 +739,51 @@ export default function BookingPage() {
             disabled={[{ before: new Date() }, isBlockedDay, fullyBookedDays]}
             modifiers={{
               fullyBooked: fullyBookedDays,
-              oneLeft: oneSlotLeftDays,
+  oneLeft: oneSlotLeftDays,
+  twoLeft: twoSlotLeftDays,
             }}
+            // modifiersStyles={{
+            //   fullyBooked: {
+            //     textDecoration: "line-through",
+            //     color: "#dc2626",
+            //     fontWeight: "600",
+            //   },
+            //   oneLeft: {
+            //     backgroundColor: "#fef3c7",
+            //     color: "#92400e",
+            //     fontWeight: "600",
+            //   },
+            // }}
             modifiersStyles={{
-              fullyBooked: {
-                textDecoration: "line-through",
-                color: "#dc2626",
-                fontWeight: "600",
-              },
-              oneLeft: {
-                backgroundColor: "#fef3c7",
-                color: "#92400e",
-                fontWeight: "600",
-              },
-            }}
+  fullyBooked: {
+    textDecoration: "line-through",
+    color: "#dc2626",
+    fontWeight: "600",
+  },
+  oneLeft: {
+    backgroundColor: "#fef3c7",
+    color: "#92400e",
+    fontWeight: "600",
+  },
+  twoLeft: {
+    backgroundColor: "#dcfce7",
+    color: "#166534",
+    fontWeight: "600",
+  },
+}}
+
           />
 
-          <p className="mt-2 text-sm text-gray-600">
+          {/* <p className="mt-2 text-sm text-gray-600">
             🟡 <strong>Yellow:</strong> 1 slot left &nbsp; | &nbsp; 🔴{" "}
             <strong>Red:</strong> Fully booked
-          </p>
+          </p> */}
+          <p className="mt-2 text-sm text-gray-600">
+  🟢 <strong>Green:</strong> 2 slots left &nbsp; | &nbsp;
+  🟡 <strong>Yellow:</strong> 1 slot left &nbsp; | &nbsp;
+  🔴 <strong>Red:</strong> Fully booked
+</p>
+
         </div>
 
         
